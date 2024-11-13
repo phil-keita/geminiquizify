@@ -32,7 +32,3 @@ if 'questions' in st.session_state:
                             st.write(question['explanation'])
                         else:
                             st.error("Wrong!")
-
-
-
-

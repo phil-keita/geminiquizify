@@ -1,2 +1,4 @@
 # geminiquizify
-This tool aims to provide users with instant feedback and comprehensive explanations, thus facilitating deeper comprehension and retention of knowledge.
+Uses Gemini to generate topic specific quizes based on documents.
+
+try it [here](http://34.66.138.54:8501/)
