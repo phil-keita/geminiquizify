@@ -1,8 +1,8 @@
 from vertexai.language_models import TextEmbeddingInput, TextEmbeddingModel
 
 MODEL_NAME = 'text-embedding-004'
-DIMENSIONS = 384
-TASK = 'QUESTION_ANSWERING'
+DIMENSIONS = 384 #Be careful when changing this. This is the dimensionality for ChromnaDB. Anything else will crash the code
+TASK = 'RETRIEVAL_QUERY'
 
 class TextEmbedder:
 
@@ -19,8 +19,12 @@ class TextEmbedder:
         """
         inputs = [TextEmbeddingInput(text, self.task) for text in texts]
         kwargs = dict(output_dimensionality = self.dim) if self.dim else {}
-        embeddings = self.model.get_embeddings(inputs, **kwargs)
-        embeddings = [e.values for e in embeddings]
-        return embeddings
+        # This embedding modal only allows 250 elements per request
+        inputs_list = [inputs[i:i + 250] for i in range(0, len(inputs), 250)] 
+        result = []
+        for input in inputs_list:
+            embeddings = self.model.get_embeddings(input, **kwargs)
+            result += [e.values for e in embeddings]
+        return result
 
 

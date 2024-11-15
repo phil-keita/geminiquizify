@@ -14,9 +14,12 @@ class DocumentProcessor:
         pdf = fitz.open(stream=file, filetype="pdf")
         texts = [page.get_text() for page in pdf]
 
+        if len(texts) == 1 and texts[0] == "":
+            raise ValueError("The PDF file is empty")
+
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
-            chunk_overlap=250,
+            chunk_overlap=50,
             length_function=len,
             is_separator_regex=False
         )

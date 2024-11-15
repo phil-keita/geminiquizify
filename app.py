@@ -8,14 +8,17 @@ with st.form('generator'):
     uploaded_file = st.file_uploader("Choose file")
     topic = st.text_input('Enter the quiz topic:')
     num_questions = st.slider('Select the number of questions:', 1, 5)
-    submit_button = st.form_submit_button(label='Generate Quiz')
+    submit_button = st.form_submit_button(label='Generate Quiz', disabled=uploaded_file)
     if submit_button:
-        if uploaded_file:
-            st.write("Generating Questions...")
-            quiz = QuizManager(file=uploaded_file, topic=topic, num_questions=num_questions)
-            st.session_state['questions'] = quiz.questions
-        else:
-            st.error("Make sure to upload a document!")
+            if uploaded_file.type == 'pdf':
+                with st.spinner("Generating Questions..."):
+                    try:
+                        quiz = QuizManager(file=uploaded_file, topic=topic, num_questions=num_questions)
+                        st.session_state['questions'] = quiz.questions
+                    except ValueError as e:
+                        st.error("The document you uploaded is empty")
+            else:
+                st.error("Make sure to upload a PDF document!")
 
 if 'questions' in st.session_state:
     for i, question in enumerate(st.session_state['questions']):
