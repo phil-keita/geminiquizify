@@ -32,7 +32,7 @@ class TextEmbedder:
             if tokens.total_tokens < 20000:
                 embeddings = self.model.get_embeddings(input, **kwargs)
                 result += [e.values for e in embeddings]
-                documents.append(input)
+                documents += input
         return result, documents
 
 
