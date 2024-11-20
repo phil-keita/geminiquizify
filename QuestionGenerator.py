@@ -39,7 +39,7 @@ class QuizGenerator:
         # Retrieval error handling
         if not relevant:
             raise ValueError("No relevant documents found for the quiz topic!")
-        
+
         context = relevant["documents"][0][0]
         question_bank = []
         for _ in range(num_questions):
