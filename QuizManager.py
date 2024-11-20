@@ -10,14 +10,16 @@ class QuizManager:
         document_processor = DocumentProcessor(file)
 
         embedder = TextEmbedder()
-        embeddings = embedder.embed_text(document_processor.chunks)
+        embeddings, documents = embedder.embed_text(document_processor.chunks)
         
         chroma_client = chromadb.PersistentClient(path='./store', settings=Settings(allow_reset=True))
         chroma_client.reset()
         collection = chroma_client.get_or_create_collection('collection')
+        if len(embeddings) == 0:
+            raise Exception("This document cannot be coerced. Please try a different one.")
         collection.upsert(
-            ids = [str(i) for i in range(len(document_processor.chunks))],
-            documents= document_processor.chunks,
+            ids = [str(i) for i in range(len(embeddings))],
+            documents= documents,
             embeddings= embeddings
         )
         self.questions = QuizGenerator().generate_questions(topic, collection, num_questions)
