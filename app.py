@@ -13,9 +13,13 @@ with st.form('generator'):
         print("- User submitted the form.")
         if uploaded_files and topic and topic.strip() != "":
             print("- Generating questions ...")
-            st.write("Generating Questions...")
-            quiz = QuizManager(files=uploaded_files, topic=topic, num_questions=num_questions)
+            with st.spinner('Generating questions ...'):
+                quiz = QuizManager(files=uploaded_files, topic=topic, num_questions=num_questions)
             st.session_state['questions'] = quiz.questions
+            if 'quizzes' in st.session_state:
+                st.session_state['quizzes'].append(quiz)
+            else:
+                st.session_state['quizzes'] = [quiz]
             print("- Questions stored in session state.")
         else:
             error_message = "Make sure to upload a file(s)" if not uploaded_files else "Make sure to enter a topic"
@@ -45,3 +49,15 @@ if 'questions' in st.session_state:
                             st.write(question['explanation'])
                         else:
                             st.error("Wrong!")
+
+def update_questions(index):
+    st.session_state['questions'] = st.session_state['quizzes'][index].questions
+
+
+if 'quizzes' in st.session_state:
+    with st.sidebar:
+        st.subheader("Previous Quizzes:")
+        for i, quiz in enumerate(reversed(st.session_state['quizzes'])):
+            index = len(st.session_state['quizzes']) - i - 1
+            st.button(f"{quiz.topic}", on_click=lambda index=index: update_questions(index), type="secondary")
+

@@ -4,6 +4,7 @@ from vertexai.preview.generative_models import GenerativeModel, Part, Content, C
 from datetime import datetime
 import json
 import random
+import streamlit as st
 
 
 PROJECT_ID = 'quizify-440923'
@@ -56,7 +57,10 @@ class QuizGenerator:
             return "{"+"}"
         response = response.split("{")[1]
         response = response.split("}")[0]
-        question = json.loads("{"+response+"}")
+        try:
+            question = json.loads("{"+response+"}")
+        except Exception as e:
+            st.warning("Something went wrong")
         return question
 
     def generate_question(self, quiz_topic, context):
