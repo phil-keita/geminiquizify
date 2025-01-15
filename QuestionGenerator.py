@@ -3,6 +3,7 @@ from vertexai.preview import generative_models
 from vertexai.preview.generative_models import GenerativeModel, Part, Content, ChatSession, GenerationResponse
 from datetime import datetime
 import json
+import random
 
 
 PROJECT_ID = 'quizify-440923'
@@ -35,12 +36,15 @@ class QuizGenerator:
             raise ValueError("Vectorstore is not initialized!")
         
         # Retrieve relevant documents or elements for question generation
-        relevant = vector_store.query(query_texts=quiz_topic, n_results=2)
+        relevant = vector_store.query(query_texts=quiz_topic, n_results=3)
+        
         # Retrieval error handling
         if not relevant:
             raise ValueError("No relevant documents found for the quiz topic!")
         
-        context = relevant["documents"][0][0]
+        context = ""
+        for doc in relevant["documents"]:
+            context += doc[0] + "\n"
         question_bank = []
         for _ in range(num_questions):
             question_bank.append(self.generate_question(quiz_topic, context))
@@ -57,7 +61,7 @@ class QuizGenerator:
 
     def generate_question(self, quiz_topic, context):
         # Format the prompt
-        prompt = f"Generate a quiz question based on the following topic: {quiz_topic}\n\nContext:\n{context}. Respond in json with the 'question', 'options', 'correct_answer' and 'explanation'"
+        prompt = f"Based on the following knowledge:{context}\n\n Generate a quiz question on {quiz_topic}. Respond in json with the 'question', 'options', 'correct_answer' and 'explanation'"
         output = "{"+"}"
         try:
             response = self.llm.send_message(prompt)
@@ -68,6 +72,3 @@ class QuizGenerator:
                 file.write(log)
         question = self.format_question(output)
         return question
-
-
-
