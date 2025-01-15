@@ -29,7 +29,7 @@ class DocumentProcessor:
         # langchain text splitter
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
-            chunk_overlap=250,
+            chunk_overlap=10,
             length_function=len,
             is_separator_regex=False
         )
